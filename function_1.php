@@ -1,7 +1,6 @@
-
 <?php
 // 1
-$person = 'Иванов Иван Иванович';
+include 'array.inc.php';
 
 function getPartsFromFullname($person)
 {
@@ -14,60 +13,44 @@ function getPartsFromFullname($person)
     ];
     return $splittedName;
 }
-$splittedName =  getPartsFromFullname($person);
+
 
 
 // 2 
 
-$name = 'Ivan';
-$surname = 'Ivanov';
-$patronomyc = 'Ivanovich';
 
-function getFullnameFromParts($name, $surname, $patronomyc)
+
+function getFullnameFromParts($person)
 {
-    echo $surname . ' ' . $name . ' ' . $patronomyc;
+    $splittedName =  getPartsFromFullname($person);
+    return $splittedName['surname'] . ' ' . $splittedName['name'] . ' ' .$splittedName['patronomyc'];
 }
 
-getFullnameFromParts($name, $surname, $patronomyc);
+
 
 
 // 3
 
-function getShortName()
+function getShortName($person)
 {
-    $str = 'Ivanov Ivan Ivanovich';
-    $arr_full = explode(' ', $str);
-    $lastname = $arr_full[0];
-    $firstname = $arr_full[1];
-
-
-    $firstname_short = str_split($firstname)[0] . '. ';
-
-    $result = $lastname . ' ' . $firstname_short;
-    echo $result;
+    $splittedName =  getPartsFromFullname($person);
+    $result = $splittedName['surname'] . ' ' . $splittedName['name'][0] . '.';
+    return $result;
 }
-getShortName();
+
 
 // 4
-include 'array.inc.php';
+
 
 function getGenderFromName($person)
 {
-    $splittedName = explode(' ',  $person);
-    $fullname = [
-        'surname' => $splittedName[0],
-        'name' => $splittedName[1],
-        'patronomyc' => $splittedName[2],
-    ];
-    
-    $surname = $fullname['surname'];
-    $name = $fullname['name'];
-    $patronomyc = $fullname['patronomyc'];
+
+    $splittedName =  getPartsFromFullname($person);
     $count = 0;
-    if (mb_substr($surname, -2) == 'ва' or mb_substr($name, -1) == 'а' or mb_substr($patronomyc, -3) == 'вна') {
-        $count -= 1;
-    } elseif (mb_substr($surname, -1) == 'в' or mb_substr($name, -1) == 'й' or mb_substr($name, -1) == 'н' or mb_substr($patronomyc, -2) == 'ич') {
-        $count += 1;
+    if (mb_substr($splittedName['surname'], -2) == 'ва' or mb_substr($splittedName['name'], -1) == 'а' or mb_substr($splittedName['patronomyc'], -3) == 'вна') {
+        $count ++;
+    } elseif (mb_substr($splittedName['surname'], -1) == 'в' or mb_substr($splittedName['name'], -1) == 'й' or mb_substr($splittedName['name'], -1) == 'н' or mb_substr($splittedName['patronomyc'], -2) == 'ич') {
+        $count --;
     }
     if ($count < 0) {
         $gender =  'Женский пол';
@@ -85,14 +68,13 @@ echo '<br>';
 
 function getGenderDescription($example_persons_array)
 {
-    $female = 0;
-    $male = 0;
-    $smt = 0;
     for ($i = 0; $i < count($example_persons_array); $i++) {
         $person = $example_persons_array[$i]['fullname'];
         $gender[$i] = getGenderFromName($person);
     }
-    
+    $female = 0;
+    $male = 0;
+    $smt = 0;
     if ($gender =  'Женский пол') {
         $female += 1;
         
@@ -108,13 +90,6 @@ function getGenderDescription($example_persons_array)
     $smtg = $smt/count($example_persons_array) * 100;
     echo 'Гендерный состав аудитории: <hr>' . 'Мужчины - ' . round($numberMale,2). '%<br>' . 'Женщины - ' . round($numberFemale,2) . '%<br>' . 'Не удалось определить - ' . round($smtg, 2) . '%<br>';
 }
+
 getGenderDescription($example_persons_array);
 ?>
-
-
-
-
-
-
-
-
